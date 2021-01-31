@@ -465,7 +465,7 @@ const string uniform_scorecard_colour0 = "_Colour0";
 const string uniform_scorecard_colour1 = "_Colour1";
 const string uniform_scorecard_info = "_Info";
 const string uniform_marker_colour = "_Color";
-const string uniform_cue_colour = "_ReColor";
+const string uniform_cue_colour = "_EmissionColor";
 
 #endif
 
@@ -2731,10 +2731,9 @@ float next_refresh = 0.0f;
 
 void _htmenu_update()
 {
-	#if UNITY_EDITOR
-	return;
-	#endif
-
+	if (localplayer == null) // Removed the ifdef because rider didn't like it, just return if local player is null, means we're in editor.
+		return;
+	
 	m_desktop = !Networking.LocalPlayer.IsUserInVR();
 
 	if( Time.timeSinceLevelLoad > next_refresh )
@@ -2767,22 +2766,17 @@ void _htmenu_update()
 		#if MENU_DEV
 		m_devcursor.transform.position = localplayer.GetBonePosition( HumanBodyBones.RightIndexDistal );
 		#endif
-
+		
+		// Xiexe: Changed VR to use just the tracking data position, hopefully this feels alright.
 		_htmenu_begin(); 
 		_htmenu_hand = VRC_Pickup.PickupHand.Left;
-
-		// VR use figer tips / hand positions
-		m_cursor = m_base.transform.InverseTransformPoint( localplayer.GetBonePosition( HumanBodyBones.LeftIndexDistal ) );
-		_htmenu_trimin();
-
-		m_cursor = m_base.transform.InverseTransformPoint( localplayer.GetBonePosition( HumanBodyBones.LeftIndexProximal ) );
+		VRCPlayerApi.TrackingData leftHand = localplayer.GetTrackingData(VRCPlayerApi.TrackingDataType.LeftHand);
+		m_cursor = m_base.transform.InverseTransformPoint( leftHand.position );
 		_htmenu_trimin();
 
 		_htmenu_hand = VRC_Pickup.PickupHand.Right;
-		m_cursor = m_base.transform.InverseTransformPoint( localplayer.GetBonePosition( HumanBodyBones.RightIndexDistal ) );
-		_htmenu_trimin();
-
-		m_cursor = m_base.transform.InverseTransformPoint( localplayer.GetBonePosition( HumanBodyBones.RightIndexProximal ) );
+		VRCPlayerApi.TrackingData rightHand = localplayer.GetTrackingData(VRCPlayerApi.TrackingDataType.RightHand);
+		m_cursor = m_base.transform.InverseTransformPoint( rightHand.position );
 		_htmenu_trimin();
 	}
 
@@ -3108,7 +3102,8 @@ void _hit_general()
 
 	sn_oursim = true;
 
-	AudioSource.PlayClipAtPoint( snd_hitball, cuetip.transform.position, 1.0f );
+	float vol = Mathf.Clamp(ball_V[0].magnitude * 0.1f, 0f, 0.4f);
+	AudioSource.PlayClipAtPoint( snd_hitball, cuetip.transform.position, vol );
 }
 
 private void Update()
@@ -3371,6 +3366,9 @@ private void Start()
 	aud_main = this.GetComponent<AudioSource>();
 	_htmenu_init();
 	_sn_cpyprev();
+	
+	cueRenderObjs[ 0 ].GetComponent< MeshRenderer >().sharedMaterial.SetColor( uniform_cue_colour, k_tableColourBlack );
+	cueRenderObjs[ 1 ].GetComponent< MeshRenderer >().sharedMaterial.SetColor( uniform_cue_colour, k_tableColourBlack );
 
 	#if HT8B_DEBUGGER
 	_frp( FRP_LOW + "Starting" + FRP_END );
