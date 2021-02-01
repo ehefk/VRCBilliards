@@ -296,6 +296,8 @@ const string FRP_END =	"</color>";
 [SerializeField]			Texture			scorecard4ball;
 
 // Audio
+public GameObject AudioSourcePoolContainer;
+private AudioSource[] ball_AudioPool;
 [SerializeField]			AudioClip		snd_Intro;
 [SerializeField]			AudioClip		snd_Sink;
 [SerializeField]			AudioClip[]		snd_Hits;
@@ -1672,8 +1674,9 @@ void _phy_ball_step( int id )
 				if( ball_V[ id ].sqrMagnitude > 0 && ball_V[ i ].sqrMagnitude > 0 )
 				{
 					int clip = UnityEngine.Random.Range(0, snd_Hits.Length - 1);
-					float vol = Mathf.Clamp01((ball_V[id].magnitude + ball_V[i].magnitude) * reflection.magnitude);
-					AudioSource.PlayClipAtPoint(snd_Hits[clip], balls_render[id].transform.position, vol);
+					float vol = Mathf.Clamp01(ball_V[id].magnitude * reflection.magnitude);
+					ball_AudioPool[id].transform.position = balls_render[id].transform.position;
+					ball_AudioPool[id].PlayOneShot(snd_Hits[clip], vol);
 				}
 
 				// First hit detected
@@ -3364,6 +3367,10 @@ private void Update()
 private void Start()
 {
 	aud_main = this.GetComponent<AudioSource>();
+	
+	if(AudioSourcePoolContainer != null) // Xiexe: Use a pool for audio instead of using the PlayClipAtPoint method because PlayClipAtPoint is buggy and VRC audio controls do not modify it.
+		ball_AudioPool = AudioSourcePoolContainer.GetComponentsInChildren<AudioSource>();
+	
 	_htmenu_init();
 	_sn_cpyprev();
 	
