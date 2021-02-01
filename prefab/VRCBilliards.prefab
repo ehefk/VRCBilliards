@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 83133125}
   - component: {fileID: 83133126}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 107850046}
   - component: {fileID: 107850047}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 188644937}
   - component: {fileID: 188644938}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 199461225}
   - component: {fileID: 199461226}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -519,7 +519,7 @@ GameObject:
   - component: {fileID: 211174368}
   - component: {fileID: 211174369}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-07
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -646,7 +646,7 @@ GameObject:
   - component: {fileID: 317970743}
   - component: {fileID: 317970744}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -773,7 +773,7 @@ GameObject:
   - component: {fileID: 561526133}
   - component: {fileID: 561526134}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -900,7 +900,7 @@ GameObject:
   - component: {fileID: 1283585572}
   - component: {fileID: 1283585573}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-00
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1027,7 +1027,7 @@ GameObject:
   - component: {fileID: 1445331308}
   - component: {fileID: 1445331309}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1154,7 +1154,7 @@ GameObject:
   - component: {fileID: 1449529402}
   - component: {fileID: 1449529403}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1281,7 +1281,7 @@ GameObject:
   - component: {fileID: 1661658531}
   - component: {fileID: 1661658532}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1408,7 +1408,7 @@ GameObject:
   - component: {fileID: 1754493538}
   - component: {fileID: 1754493539}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-09
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1535,7 +1535,7 @@ GameObject:
   - component: {fileID: 1806492072}
   - component: {fileID: 1806492073}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1662,7 +1662,7 @@ GameObject:
   - component: {fileID: 1811670794}
   - component: {fileID: 1811670795}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-08
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1835,7 +1835,7 @@ GameObject:
   - component: {fileID: 2074205514}
   - component: {fileID: 2074205515}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1962,7 +1962,7 @@ GameObject:
   - component: {fileID: 2121524323}
   - component: {fileID: 2121524324}
   m_Layer: 23
-  m_Name: Audio Source
+  m_Name: Audio Source-01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
