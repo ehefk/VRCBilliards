@@ -225,10 +225,10 @@ public class ht8b_cue : UdonSharpBehaviour
 					ui_pressE.SetActive( false );
 				}
 			}
-
+			#endif
+			
 			lag_objBase = Vector3.Lerp( lag_objBase, this.transform.position, Time.deltaTime * 16.0f );
-		#endif
-
+			
 			if( !bOtherLock )
 				lag_objTarget = Vector3.Lerp( lag_objTarget, objTarget.transform.position, Time.deltaTime * 16.0f );
 
@@ -248,7 +248,9 @@ public class ht8b_cue : UdonSharpBehaviour
 		#if !HT_QUEST
 		}
 		#endif
-
+		
+		//Xiexe: I find this to be a little silly, hard coding bounds is a little nuts. I think it should either be exposed to the inspector
+		// or should be set using a trigger volume and using it's bounds via the editor. We're in a modern game engine, no need to do this. We have the technology.
 		if( bHolding )
 		{
 			// Clamp controllers to play boundaries while we have hold of them

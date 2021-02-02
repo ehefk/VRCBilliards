@@ -296,6 +296,9 @@ const string FRP_END =	"</color>";
 [SerializeField]			Texture			scorecard4ball;
 
 // Audio
+public GameObject AudioSourcePoolContainer;
+private AudioSource[] ball_AudioPool;
+public AudioSource CueTipAudio;
 [SerializeField]			AudioClip		snd_Intro;
 [SerializeField]			AudioClip		snd_Sink;
 [SerializeField]			AudioClip[]		snd_Hits;
@@ -347,7 +350,7 @@ public
 #endif
 
 									uint sn_gamemode	= 0;	// 19:8 (0x700)	Gamemode ID 3 bit	{ 0: 8 ball, 1: 9 ball, 2+: undefined }
-[HideInInspector] public	uint sn_timer		= 0;	// 19:13 (0x6000)	Timer ID 2 bit		{ 0: inf, 1: 30s, 2: 60s, 3: undefined }
+[HideInInspector] public	uint sn_timer		= 0;	// 19:13 (0x6000)	Timer ID 2 bit		{ 0: inf, 1: 10s, 2: 15s, 3: 30s, 4: 60s, 5: undefined }
 									bool sn_teams = false;	// 19:15 (0x8000)	Teams on/off (1 bit)
 
 ushort sn_packetid	= 0;			// 20:0 (0xffff)	Current packet number, used for locking updates so we dont accidently go back.
@@ -465,7 +468,7 @@ const string uniform_scorecard_colour0 = "_Colour0";
 const string uniform_scorecard_colour1 = "_Colour1";
 const string uniform_scorecard_info = "_Info";
 const string uniform_marker_colour = "_Color";
-const string uniform_cue_colour = "_ReColor";
+const string uniform_cue_colour = "_EmissionColor";
 
 #endif
 
@@ -679,12 +682,12 @@ void _vis_floaty_eval()
 
 void _timer_reset()
 {
-	if( sn_timer == 1 )	// 30s
+	if (sn_timer == 0)
 	{
 		timer_end = Time.timeSinceLevelLoad + 30.0f;
 		timer_recip = 0.03333333333f;
 	}
-	else						// 60s
+	else
 	{
 		timer_end = Time.timeSinceLevelLoad + 60.0f;
 		timer_recip = 0.01666666666f;
@@ -1478,6 +1481,7 @@ void _phy_ball_table_carom( int id )
 }
 
 // TODO: inline this
+// Xiexe: I think that this is a rather cursed way to handle table edge collision detections and I think there's maybe a less cursed way to do it.
 void _phy_ball_table_std( int id )
 {
 	float zy, zx, zk, zw, d, k, i, j, l, r;
@@ -1672,8 +1676,9 @@ void _phy_ball_step( int id )
 				if( ball_V[ id ].sqrMagnitude > 0 && ball_V[ i ].sqrMagnitude > 0 )
 				{
 					int clip = UnityEngine.Random.Range(0, snd_Hits.Length - 1);
-					float vol = Mathf.Clamp01((ball_V[id].magnitude + ball_V[i].magnitude) * reflection.magnitude);
-					AudioSource.PlayClipAtPoint(snd_Hits[clip], balls_render[id].transform.position, vol);
+					float vol = Mathf.Clamp01(ball_V[id].magnitude * reflection.magnitude);
+					ball_AudioPool[id].transform.position = balls_render[id].transform.position;
+					ball_AudioPool[id].PlayOneShot(snd_Hits[clip], vol);
 				}
 
 				// First hit detected
@@ -2731,10 +2736,9 @@ float next_refresh = 0.0f;
 
 void _htmenu_update()
 {
-	#if UNITY_EDITOR
-	return;
-	#endif
-
+	if (localplayer == null) // Removed the ifdef because rider didn't like it, just return if local player is null, means we're in editor.
+		return;
+	
 	m_desktop = !Networking.LocalPlayer.IsUserInVR();
 
 	if( Time.timeSinceLevelLoad > next_refresh )
@@ -2767,22 +2771,17 @@ void _htmenu_update()
 		#if MENU_DEV
 		m_devcursor.transform.position = localplayer.GetBonePosition( HumanBodyBones.RightIndexDistal );
 		#endif
-
+		
+		// Xiexe: Changed VR to use just the tracking data position, hopefully this feels alright.
 		_htmenu_begin(); 
 		_htmenu_hand = VRC_Pickup.PickupHand.Left;
-
-		// VR use figer tips / hand positions
-		m_cursor = m_base.transform.InverseTransformPoint( localplayer.GetBonePosition( HumanBodyBones.LeftIndexDistal ) );
-		_htmenu_trimin();
-
-		m_cursor = m_base.transform.InverseTransformPoint( localplayer.GetBonePosition( HumanBodyBones.LeftIndexProximal ) );
+		VRCPlayerApi.TrackingData leftHand = localplayer.GetTrackingData(VRCPlayerApi.TrackingDataType.LeftHand);
+		m_cursor = m_base.transform.InverseTransformPoint( leftHand.position );
 		_htmenu_trimin();
 
 		_htmenu_hand = VRC_Pickup.PickupHand.Right;
-		m_cursor = m_base.transform.InverseTransformPoint( localplayer.GetBonePosition( HumanBodyBones.RightIndexDistal ) );
-		_htmenu_trimin();
-
-		m_cursor = m_base.transform.InverseTransformPoint( localplayer.GetBonePosition( HumanBodyBones.RightIndexProximal ) );
+		VRCPlayerApi.TrackingData rightHand = localplayer.GetTrackingData(VRCPlayerApi.TrackingDataType.RightHand);
+		m_cursor = m_base.transform.InverseTransformPoint( rightHand.position );
 		_htmenu_trimin();
 	}
 
@@ -3108,7 +3107,9 @@ void _hit_general()
 
 	sn_oursim = true;
 
-	AudioSource.PlayClipAtPoint( snd_hitball, cuetip.transform.position, 1.0f );
+	float vol = Mathf.Clamp(ball_V[0].magnitude * 0.1f, 0f, 0.6f);
+	CueTipAudio.transform.position = cuetip.transform.position;
+	CueTipAudio.PlayOneShot(snd_hitball, vol);
 }
 
 private void Update()
@@ -3369,8 +3370,15 @@ private void Update()
 private void Start()
 {
 	aud_main = this.GetComponent<AudioSource>();
+	
+	if(AudioSourcePoolContainer != null) // Xiexe: Use a pool for audio instead of using the PlayClipAtPoint method because PlayClipAtPoint is buggy and VRC audio controls do not modify it.
+		ball_AudioPool = AudioSourcePoolContainer.GetComponentsInChildren<AudioSource>();
+	
 	_htmenu_init();
 	_sn_cpyprev();
+	
+	cueRenderObjs[ 0 ].GetComponent< MeshRenderer >().sharedMaterial.SetColor( uniform_cue_colour, k_tableColourBlack );
+	cueRenderObjs[ 1 ].GetComponent< MeshRenderer >().sharedMaterial.SetColor( uniform_cue_colour, k_tableColourBlack );
 
 	#if HT8B_DEBUGGER
 	_frp( FRP_LOW + "Starting" + FRP_END );

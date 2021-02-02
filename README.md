@@ -1,6 +1,6 @@
-# VRChat 8 Ball source mirror
+# VRChat Billiards
 
-![](https://i.imgur.com/3cHrbf1.jpg)
+![](https://i.imgur.com/WsYGyHY.png)
 
 ## For World Creators
 Follow the Collisions layers steps first before importing package!
