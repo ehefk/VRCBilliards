@@ -298,6 +298,7 @@ const string FRP_END =	"</color>";
 // Audio
 public GameObject AudioSourcePoolContainer;
 private AudioSource[] ball_AudioPool;
+public AudioSource CueTipAudio;
 [SerializeField]			AudioClip		snd_Intro;
 [SerializeField]			AudioClip		snd_Sink;
 [SerializeField]			AudioClip[]		snd_Hits;
@@ -349,7 +350,7 @@ public
 #endif
 
 									uint sn_gamemode	= 0;	// 19:8 (0x700)	Gamemode ID 3 bit	{ 0: 8 ball, 1: 9 ball, 2+: undefined }
-[HideInInspector] public	uint sn_timer		= 0;	// 19:13 (0x6000)	Timer ID 2 bit		{ 0: inf, 1: 30s, 2: 60s, 3: undefined }
+[HideInInspector] public	uint sn_timer		= 0;	// 19:13 (0x6000)	Timer ID 2 bit		{ 0: inf, 1: 10s, 2: 15s, 3: 30s, 4: 60s, 5: undefined }
 									bool sn_teams = false;	// 19:15 (0x8000)	Teams on/off (1 bit)
 
 ushort sn_packetid	= 0;			// 20:0 (0xffff)	Current packet number, used for locking updates so we dont accidently go back.
@@ -681,12 +682,12 @@ void _vis_floaty_eval()
 
 void _timer_reset()
 {
-	if( sn_timer == 1 )	// 30s
+	if (sn_timer == 0)
 	{
 		timer_end = Time.timeSinceLevelLoad + 30.0f;
 		timer_recip = 0.03333333333f;
 	}
-	else						// 60s
+	else
 	{
 		timer_end = Time.timeSinceLevelLoad + 60.0f;
 		timer_recip = 0.01666666666f;
@@ -1480,6 +1481,7 @@ void _phy_ball_table_carom( int id )
 }
 
 // TODO: inline this
+// Xiexe: I think that this is a rather cursed way to handle table edge collision detections and I think there's maybe a less cursed way to do it.
 void _phy_ball_table_std( int id )
 {
 	float zy, zx, zk, zw, d, k, i, j, l, r;
@@ -3105,8 +3107,9 @@ void _hit_general()
 
 	sn_oursim = true;
 
-	float vol = Mathf.Clamp(ball_V[0].magnitude * 0.1f, 0f, 0.4f);
-	AudioSource.PlayClipAtPoint( snd_hitball, cuetip.transform.position, vol );
+	float vol = Mathf.Clamp(ball_V[0].magnitude * 0.1f, 0f, 0.6f);
+	CueTipAudio.transform.position = cuetip.transform.position;
+	CueTipAudio.PlayOneShot(snd_hitball, vol);
 }
 
 private void Update()
